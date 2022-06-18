@@ -6,14 +6,11 @@ type Data = {
   name: string;
 };
 
-const findOne = async (collection: string, query: Filter<any>): Promise<any> => {
+const findAll = async (collection: string, query: Filter<any>): Promise<any> => {
   try {
     const { db } = await connectToDatabase();
-    const response = await db.collection(collection).findOne(query);
-    if (response === null || response === undefined) {
-      return Promise.resolve({});
-    }
-    return Promise.resolve(response);
+    const response = await db.collection(collection).find(query).toArray();
+    return Promise.resolve(response.length > 0 ? response : []);
   } catch (error) {
     console.log(error);
     return error;
@@ -45,8 +42,8 @@ const updateOne = async (collection: string, query: Filter<any>, doc: Document):
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { method, name, collection, doc, query } = JSON.parse(req.body);
   switch (name) {
-    case 'findOne': {
-      const data = await findOne(collection, query);
+    case 'findAll': {
+      const data = await findAll(collection, query);
       res.status(200).json(data);
       break;
     }
