@@ -1,0 +1,54 @@
+{
+  "env": {
+      "browser": true,
+      "es2021": true
+  },
+  "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@next/next/recommended",
+      "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "ecmaVersion": 13,
+      "sourceType": "module"
+  },
+  "plugins": [
+      "react",
+      "@typescript-eslint",
+      "prettier"
+  ],
+  "rules": {
+      "func-style": [
+          "error",
+          "expression",
+          {
+              "allowArrowFunctions": true
+          }
+      ],
+      "prettier/prettier": [
+          "error",
+          {
+              "singleQuote": true,
+              "trailingComma": "es5",
+              "bracketSpacing": true,
+              "printWidth": 140,
+              "endOfLine": "lf"
+          }
+      ],
+      "react/prop-types": "off",
+      "react/react-in-jsx-scope": "off",
+      "no-async-promise-executor": "off",
+      "prefer-arrow-callback": "error",
+      "no-use-before-define": "error",
+      "no-prototype-builtins": "off",
+      "prefer-const": "error",
+      "no-console": "off",
+      "no-var": "error"
+  }
+}

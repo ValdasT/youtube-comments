@@ -1,0 +1,102 @@
+$sub-color: #525050;
+$sub-color-light: #807f7f;
+$main-color: black;
+
+$white-text: #fff;
+$grey-text-light: #707070;
+$grey-text-dark: #9c9c9c;
+$danger-text: #b40000;
+
+$base-white: #fff;
+$base-light: #ffffff;
+$base-second-light: #eeeeee;
+$blue-lightes: #edf6fc;
+$blue-light: #80c6ec;
+$action-light: #78c8e6;
+$primary-light: #5cb9db;
+$primary-light-darker: #55accc;
+
+$base-dark: #0f0f0f;
+$base-second-dark: #363636;
+$base-third-dark: #1a1a1a;
+$blue-darker: #243036;
+$blue-dark: #5b8aa3;
+$action-dark: #137497;
+$primary-dark: #137497;
+$primary-dark-darker: #116685;
+
+$light-grey-transperant: #80808038;
+$dark-grey-transperant: #0f0f0f38;
+
+$main-font: "Rubik";
+
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @-moz-keyframes #{$animation-name} {
+    @content;
+  }
+  @-ms-keyframes #{$animation-name} {
+    @content;
+  }
+  @-o-keyframes #{$animation-name} {
+    @content;
+  }
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+@mixin animation($str) {
+  -webkit-animation: #{$str};
+  -moz-animation: #{$str};
+  -ms-animation: #{$str};
+  -o-animation: #{$str};
+  animation: #{$str};
+}
+
+@mixin transform($property) {
+  -webkit-transform: $property;
+  -ms-transform: $property;
+  transform: $property;
+}
+
+@keyframes ring {
+  0% { transform: rotate(0); }
+  1% { transform: rotate(30deg); }
+  3% { transform: rotate(-28deg); }
+  5% { transform: rotate(34deg); }
+  7% { transform: rotate(-32deg); }
+  9% { transform: rotate(30deg); }
+  11% { transform: rotate(-28deg); }
+  13% { transform: rotate(26deg); }
+  15% { transform: rotate(-24deg); }
+  17% { transform: rotate(22deg); }
+  19% { transform: rotate(-20deg); }
+  21% { transform: rotate(18deg); }
+  23% { transform: rotate(-16deg); }
+  25% { transform: rotate(14deg); }
+  27% { transform: rotate(-12deg); }
+  29% { transform: rotate(10deg); }
+  31% { transform: rotate(-8deg); }
+  33% { transform: rotate(6deg); }
+  35% { transform: rotate(-4deg); }
+  37% { transform: rotate(2deg); }
+  39% { transform: rotate(-1deg); }
+  41% { transform: rotate(1deg); }
+  43% { transform: rotate(0); }
+  100% { transform: rotate(0); }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: $main-color;
+  transition: background-color 5000s ease-in-out 0s;
+}

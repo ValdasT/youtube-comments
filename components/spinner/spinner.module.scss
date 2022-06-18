@@ -1,0 +1,90 @@
+
+.spinner-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 113;
+  background-color: black;
+  opacity: 0.2;
+}
+.spinner {
+  position: absolute;
+  z-index: 114;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  svg {
+    display: none;
+  }
+
+  .spinner-container {
+    height: 20%;
+    position: relative;
+  }
+
+  .spinner-path {
+    position: relative;
+    top: 50%;
+    width: 5rem;
+    height: 5rem;
+
+    > * {
+      animation: spinner 1.5s infinite;
+
+      &:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+      }
+
+      &:nth-child(1) {
+        animation-delay: 0.1s;
+        &:after {
+          background: #55accc;
+        }
+      }
+
+      &:nth-child(2) {
+        animation-delay: 0.3s;
+        &:after {
+          background: #5cb9db;
+        }
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.6s;
+        &:after {
+          background: #5cb9db;
+        }
+      }
+      &:nth-child(4) {
+        animation-delay: 0.9s;
+        &:after {
+          background: #5cb9db;
+        }
+      }
+    }
+  }
+
+  @keyframes spinner {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
