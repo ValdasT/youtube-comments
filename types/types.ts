@@ -14,7 +14,7 @@ export type AlertType = {
 
 export type VideoContextState = {
   allVideos: Video[];
-  addVideo: (video: Video) => void;
+  addVideos: (videos: any[]) => void;
   removeVideo: (id: string) => void;
   loading: boolean;
   setLoading: (value: boolean) => void;

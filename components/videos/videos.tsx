@@ -5,7 +5,7 @@ import VideoItem from './video-item';
 import classes from './videos.module.scss';
 
 type Props = {
-  videos: Video[];
+  videos: any[];
 };
 
 const Videos: FC<Props> = ({ videos }) => {
@@ -15,8 +15,8 @@ const Videos: FC<Props> = ({ videos }) => {
       {videos.length ? <h2 style={{ textAlign: 'center' }}>Results:</h2> : null}
       <div className={classes.videos}>
         <div className={classes.grid}>
-          {videos.map((video: Video) => (
-            <VideoItem key={video.id} video={video} />
+          {videos.map((video: any) => (
+            <VideoItem key={video.videoId} video={video} />
           ))}
         </div>
       </div>
