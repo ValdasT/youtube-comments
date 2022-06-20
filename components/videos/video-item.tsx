@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { FC, Fragment } from 'react';
 import { Video } from '../../types/types';
@@ -23,7 +22,7 @@ const VideoItem: FC<Props> = ({ video }) => {
           <b>{videoId}</b>
         </p>
         <Image src={thumbnails} alt={title} width={120} height={90} />
-        <p>{cutTooLongText(title, 30)}</p>
+        <p id="title">{cutTooLongText(title, 30)}</p>
         {comments.length ? (
           <Fragment>
             <Button size="small" variant="outlined" onClick={() => Router.push(`${linkPath}`)}>
