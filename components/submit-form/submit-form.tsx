@@ -4,10 +4,11 @@ import { TextField, Button } from '@mui/material';
 import youtube from '../../pages/api/youtube';
 import { removeUnusedFields } from '../../utils/utils';
 import classes from './submit-form.module.scss';
+import { Video, InputList } from '../../types/types';
 
 const SubmitForm: FC = () => {
-  const { addVideos, setLoading, setAlert } = useContext(VideoContext);
-  const [inputList, setInputList] = useState([{ videoId: '', error: false, invalid: false }]);
+  const { addVideos, setLoading } = useContext(VideoContext);
+  const [inputList, setInputList] = useState<InputList[]>([{ videoId: '', error: false, invalid: false }]);
   let promises: any[] = [];
 
   const handleRemoveClick = (index: number) => {
@@ -27,11 +28,11 @@ const SubmitForm: FC = () => {
     setInputList(list);
   };
 
-  const checkIfValid = (inputList: any, data: any, commentsFromDb: any) => {
+  const checkIfValid = (inputList: InputList[], data: any, commentsFromDb: Video[]) => {
     promises = [];
-    return inputList.map((e: any) => {
+    return inputList.map((e: InputList) => {
       const found = data.items.some((el: any) => el.id === e.videoId);
-      const foundInDb = commentsFromDb.some((el: any) => el.videoId === e.videoId);
+      const foundInDb = commentsFromDb.some((el: Video) => el.videoId === e.videoId);
       if (!found && foundInDb) {
         return e;
       } else if (found && !foundInDb) {
@@ -48,7 +49,7 @@ const SubmitForm: FC = () => {
   };
 
   const checkFields = () => {
-    setInputList(inputList.map((e: any) => (e.videoId.length ? e : { ...e, error: true })));
+    setInputList(inputList.map((e: InputList) => (e.videoId.length ? e : { ...e, error: true })));
     return inputList.some((el) => el.error === true || el.invalid === true) ? false : true;
   };
 
@@ -63,15 +64,15 @@ const SubmitForm: FC = () => {
             name: 'findAll',
             collection: 'videos',
             query: {
-              $or: inputList.map((e: any, i) => {
+              $or: inputList.map((e: InputList) => {
                 videoIds += `${e.videoId},`;
-                return { videoId: e.videoId };
+                return { videoId: e.videoId, timestamp: { $gte: new Date().getTime() - 24 * 60 * 60 * 1000 } };
               }),
             },
           }),
         });
         let commentsFromDb = await response.json();
-        commentsFromDb = commentsFromDb.map((el: any) => {
+        commentsFromDb = commentsFromDb.map((el: Video) => {
           videoIds = videoIds.replace(`${el.videoId},`, '');
           return { ...el, fromDb: true };
         });

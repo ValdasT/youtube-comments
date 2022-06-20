@@ -1,4 +1,3 @@
-import { AlertColor } from '@mui/material';
 import { createContext, FC, useState } from 'react';
 import { VideoContextState, Video } from '../types/types';
 
@@ -8,8 +7,6 @@ export const VideoContext = createContext<VideoContextState>({
   removeVideo: () => undefined,
   loading: false,
   setLoading: () => undefined,
-  alert: { show: false, message: '', severity: 'info' },
-  setAlert: () => undefined,
 });
 
 type Props = {
@@ -17,12 +14,10 @@ type Props = {
 };
 
 const VideoProvider: FC<Props> = ({ children }) => {
-  const [allVideos, setAllVideos] = useState<any[]>([]);
+  const [allVideos, setAllVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({ show: false, message: '', severity: 'info' as AlertColor });
-
-  const addVideos = (newVideos: any[]) => setAllVideos(newVideos);
-  const removeVideo = (id: string) => setAllVideos(allVideos.filter((video) => video.id !== id));
+  const addVideos = (newVideos: Video[]) => setAllVideos(newVideos);
+  const removeVideo = (id: string) => setAllVideos(allVideos.filter((video) => video.videoId !== id));
 
   return (
     <VideoContext.Provider
@@ -32,8 +27,6 @@ const VideoProvider: FC<Props> = ({ children }) => {
         removeVideo,
         loading,
         setLoading,
-        alert,
-        setAlert,
       }}
     >
       {children}

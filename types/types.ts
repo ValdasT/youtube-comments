@@ -1,23 +1,32 @@
-import { AlertColor } from '@mui/material';
+import { Double } from 'mongodb';
+
+export type Comment = {
+  id: string;
+  text: string;
+  author: string;
+  authorImage: string;
+};
 
 export type Video = {
-  id: string;
+  _id?: string;
   title: string;
+  timestamp: Double;
+  videoId: string;
+  fromDb?: boolean;
+  comments: Comment[];
   thumbnails: string;
 };
 
-export type AlertType = {
-  show: boolean;
-  message: string;
-  severity: AlertColor;
+export type InputList = {
+  videoId: string;
+  error: boolean;
+  invalid: boolean;
 };
 
 export type VideoContextState = {
   allVideos: Video[];
-  addVideos: (videos: any[]) => void;
+  addVideos: (videos: Video[]) => void;
   removeVideo: (id: string) => void;
   loading: boolean;
   setLoading: (value: boolean) => void;
-  alert: AlertType;
-  setAlert: (alert: AlertType) => void;
 };
