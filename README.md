@@ -1,4 +1,4 @@
-# youtube-comments application
+# Youtube comments application
 ## Usage
 ![video](https://user-images.githubusercontent.com/35199948/174590798-628492b1-241a-4bc1-9954-af9f8ac0b5f7.gif)
 
