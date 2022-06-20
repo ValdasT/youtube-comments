@@ -12,9 +12,11 @@ npm install
 ```
   - Create a `env.local` file to hold environment variables and create values:
   >NEXT_PUBLIC_YOUTUBE_TOKEN=
+  >
   >NEXT_PUBLIC_YOUTUBE_BASE_URL=
   >
   >MONGODB_URI=
+  >
   >MONGODB_DB=
 
 - To start the development server run:
