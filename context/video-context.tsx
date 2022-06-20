@@ -4,7 +4,7 @@ import { VideoContextState, Video } from '../types/types';
 
 export const VideoContext = createContext<VideoContextState>({
   allVideos: [],
-  addVideo: () => undefined,
+  addVideos: () => undefined,
   removeVideo: () => undefined,
   loading: false,
   setLoading: () => undefined,
@@ -17,18 +17,18 @@ type Props = {
 };
 
 const VideoProvider: FC<Props> = ({ children }) => {
-  const [allVideos, setAllVideos] = useState<Video[]>([]);
+  const [allVideos, setAllVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ show: false, message: '', severity: 'info' as AlertColor });
 
-  const addVideo = (newVideo: Video) => setAllVideos([...allVideos, newVideo]);
+  const addVideos = (newVideos: any[]) => setAllVideos(newVideos);
   const removeVideo = (id: string) => setAllVideos(allVideos.filter((video) => video.id !== id));
 
   return (
     <VideoContext.Provider
       value={{
         allVideos,
-        addVideo,
+        addVideos,
         removeVideo,
         loading,
         setLoading,

@@ -1,16 +1,14 @@
-import { FC, useContext, useState } from 'react';
+import { ChangeEvent, FC, Fragment, useContext, useState } from 'react';
 import { VideoContext } from '../../context/video-context';
-import * as Yup from 'yup';
-import { useFormik } from 'formik';
-import Router from 'next/router';
-import CustomButton from '../custom-button/custom-button';
-import classes from './submit-form.module.scss';
-import { TextField } from '@mui/material';
+import { TextField, Button } from '@mui/material';
 import youtube from '../../pages/api/youtube';
+import { removeUnusedFields } from '../../utils/utils';
+import classes from './submit-form.module.scss';
 
 const SubmitForm: FC = () => {
-  const { allVideos, addVideo, setLoading, setAlert } = useContext(VideoContext);
-  const [inputList, setInputList] = useState([{ videoId: '' }]);
+  const { addVideos, setLoading, setAlert } = useContext(VideoContext);
+  const [inputList, setInputList] = useState([{ videoId: '', error: false, invalid: false }]);
+  let promises: any[] = [];
 
   const handleRemoveClick = (index: number) => {
     const list = [...inputList];
@@ -19,62 +17,128 @@ const SubmitForm: FC = () => {
   };
 
   const handleAddClick = () => {
-    setInputList([...inputList, { videoId: '' }]);
+    setInputList([...inputList, { videoId: '', error: false, invalid: false }]);
   };
 
-  const formik = useFormik({
-    initialValues: {
-      videoId: '',
-    },
-    validationSchema: Yup.object().shape({
-      videoId: Yup.string().required('video Id is required'),
-    }),
-    onSubmit: async (values, { resetForm }) => {
-      const { videoId } = values;
-      setLoading(true);
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const { value } = e.target;
+    const list = [...inputList];
+    list[index] = { videoId: value.trim(), error: value.length ? false : true, invalid: false };
+    setInputList(list);
+  };
+
+  const checkIfValid = (inputList: any, data: any, commentsFromDb: any) => {
+    promises = [];
+    return inputList.map((e: any) => {
+      const found = data.items.some((el: any) => el.id === e.videoId);
+      const foundInDb = commentsFromDb.some((el: any) => el.videoId === e.videoId);
+      if (!found && foundInDb) {
+        return e;
+      } else if (found && !foundInDb) {
+        promises.push(
+          youtube.get(`/commentThreads`, {
+            params: { videoId: e.videoId, part: 'snippet', maxResults: 20 },
+          })
+        );
+        return e;
+      } else {
+        return { videoId: e.videoId, error: e.error, invalid: true };
+      }
+    });
+  };
+
+  const checkFields = () => {
+    setInputList(inputList.map((e: any) => (e.videoId.length ? e : { ...e, error: true })));
+    return inputList.some((el) => el.error === true || el.invalid === true) ? false : true;
+  };
+
+  const onSubmit = async () => {
+    if (checkFields()) {
       try {
-        const { data } = await youtube.get(`/videos`, { params: { id: videoId, part: 'snippet' } });
-        if (data.items.length) {
-          const newVideo = {
-            id: videoId,
-            title: data.items[0].snippet.title,
-            thumbnails: data.items[0].snippet.thumbnails.default.url,
-          };
-          allVideos.some((el) => el.id === newVideo.id) ? null : addVideo(newVideo);
-          Router.push(`/${newVideo.id}`);
-        } else {
-          setAlert({ show: true, message: 'The video is not found. Please try another Id.', severity: 'error' });
-          resetForm();
-        }
-      } catch (err) {
-        console.log(err);
+        setLoading(true);
+        let videoIds = '';
+        const response = await fetch('/api/mongo', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: 'findAll',
+            collection: 'videos',
+            query: {
+              $or: inputList.map((e: any, i) => {
+                videoIds += `${e.videoId},`;
+                return { videoId: e.videoId };
+              }),
+            },
+          }),
+        });
+        let commentsFromDb = await response.json();
+        commentsFromDb = commentsFromDb.map((el: any) => {
+          videoIds = videoIds.replace(`${el.videoId},`, '');
+          return { ...el, fromDb: true };
+        });
+        const { data } = await youtube.get(`/videos`, { params: { id: videoIds.slice(0, -1), part: 'snippet' } });
+        setInputList(checkIfValid(inputList, data, commentsFromDb));
+        const res = await Promise.all(promises);
+        const commentsFromApi: any[] = removeUnusedFields(res, data.items);
+        commentsFromApi.length
+          ? await fetch('/api/mongo', {
+              method: 'POST',
+              body: JSON.stringify({
+                name: 'updateMany',
+                collection: 'videos',
+                doc: commentsFromApi,
+              }),
+            })
+          : null;
+
+        addVideos(commentsFromApi.concat(commentsFromDb));
+      } catch (error) {
+        console.log(error);
       } finally {
         setLoading(false);
       }
-    },
-  });
+    }
+  };
 
   return (
     <div className={classes['form-container']}>
-      <form onSubmit={formik.handleSubmit}>
-        <div className={classes['form-input']}>
-          <TextField
-            error={formik.errors.videoId ? true : false}
-            size="small"
-            style={{ width: '250px' }}
-            id="videoId"
-            name="videoId"
-            label="Video id"
-            onChange={formik.handleChange}
-            value={formik.values.videoId}
-            variant="outlined"
-          />
-          {formik.errors.videoId ? <div className={classes['invalid-feedback']}>{formik.errors.videoId}</div> : null}
-        </div>
-        <div className={classes['buttons-container']}>
-          <CustomButton type="submit">Submit</CustomButton>
-        </div>
-      </form>
+      {inputList.map((x, i) => {
+        return (
+          <Fragment key={i}>
+            <div className={classes['form-actions']}>
+              <div className={classes['form-input']}>
+                <TextField
+                  size="small"
+                  style={{ width: '250px' }}
+                  name="videoId"
+                  label="Video id"
+                  value={x.videoId}
+                  onChange={(e) => handleInputChange(e, i)}
+                  error={x.error || x.invalid}
+                />
+                {x.error ? <div className={classes['invalid-feedback']}>{`Video Id is required`}</div> : null}
+                {x.invalid ? <div className={classes['invalid-feedback']}>{`Video Id is invalid`}</div> : null}
+              </div>
+              <div className={classes['form-buttons']}>
+                {inputList.length !== 1 && (
+                  <Button size="small" variant="outlined" onClick={() => handleRemoveClick(i)}>
+                    remove
+                  </Button>
+                )}
+                {inputList.length - 1 === i && inputList.length !== 10 && (
+                  <Button style={{ margin: '0 5px' }} size="small" variant="outlined" onClick={handleAddClick}>
+                    add
+                  </Button>
+                )}
+              </div>
+            </div>
+          </Fragment>
+        );
+      })}
+      <div className={classes['buttons-container']}>
+        <Button size="small" variant="outlined" type="submit" onClick={() => onSubmit()}>
+          Submit
+        </Button>
+      </div>
     </div>
   );
 };

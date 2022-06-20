@@ -6,14 +6,11 @@ type Data = {
   name: string;
 };
 
-const findOne = async (collection: string, query: Filter<any>): Promise<any> => {
+const findAll = async (collection: string, query: Filter<any>): Promise<any> => {
   try {
     const { db } = await connectToDatabase();
-    const response = await db.collection(collection).findOne(query);
-    if (response === null || response === undefined) {
-      return Promise.resolve({});
-    }
-    return Promise.resolve(response);
+    const response = await db.collection(collection).find(query).toArray();
+    return Promise.resolve(response.length > 0 ? response : []);
   } catch (error) {
     console.log(error);
     return error;
@@ -31,10 +28,17 @@ const insertOne = async (collection: string, doc: Document): Promise<any> => {
   }
 };
 
-const updateOne = async (collection: string, query: Filter<any>, doc: Document): Promise<any> => {
+const updateMany = async (collection: string, docs: Document[]): Promise<any> => {
   try {
     const { db } = await connectToDatabase();
-    const response = await db.collection(collection).updateOne(query, doc, { upsert: true });
+    const ops = docs.map((item: any) => ({
+      updateOne: {
+        filter: { videoId: item.videoId },
+        update: { $set: { ...item, timestamp: new Date().getTime() } },
+        upsert: true,
+      },
+    }));
+    const response = await await db.collection(collection).bulkWrite(ops);
     return Promise.resolve(response);
   } catch (error) {
     console.log(error);
@@ -45,13 +49,13 @@ const updateOne = async (collection: string, query: Filter<any>, doc: Document):
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { method, name, collection, doc, query } = JSON.parse(req.body);
   switch (name) {
-    case 'findOne': {
-      const data = await findOne(collection, query);
+    case 'findAll': {
+      const data = await findAll(collection, query);
       res.status(200).json(data);
       break;
     }
-    case 'updateOne':
-      res.status(201).json(await updateOne(collection, query, doc));
+    case 'updateMany':
+      res.status(201).json(await updateMany(collection, doc));
       break;
     case 'insertOne': {
       const data = await insertOne(collection, doc);

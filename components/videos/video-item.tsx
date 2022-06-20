@@ -6,20 +6,19 @@ import { cutTooLongText } from '../../utils/utils';
 import classes from './videos.module.scss';
 
 type Props = {
-  video: Video;
+  video: any;
 };
 
 const VideoItem: FC<Props> = ({ video }) => {
-  const { id, title, thumbnails } = video;
-  const linkPath = `/${id}`;
-
+  const { videoId, title, thumbnails } = video;
+  const linkPath = `/${videoId}`;
   return (
     <div className={classes.video}>
       <Link href={linkPath}>
         <a>
           <div className={classes.content}>
             <p>
-              <b>{id}</b>
+              <b>{videoId}</b>
             </p>
             <Image src={thumbnails} alt={title} width={120} height={90} />
             <p>{cutTooLongText(title, 30)}</p>

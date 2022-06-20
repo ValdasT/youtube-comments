@@ -1,11 +1,22 @@
 .form-container {
   padding: 10px;
-  display: flex;
-  justify-content: center;
+  display:block;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
-  .form-input {
-    padding: 10px;
+  .form-actions {
+    display:flex;
+    justify-content: center;
+
+    .form-input {
+      padding: 10px;
+    }
+    .form-buttons{
+      margin-top: 15px;
+      display:flex;
+      width: 20px;
+      height: 30px;
+    }
   }
+
   .invalid-feedback {
     padding: 5px 0 0;
     font-size: 12px;

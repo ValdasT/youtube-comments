@@ -8,7 +8,6 @@ import { connectToDatabase } from '../utils/database';
 
 const Home: NextPage = () => {
   const { allVideos, loading } = useContext(VideoContext);
-
   return (
     <Fragment>
       {loading ? <Spinner /> : null}
